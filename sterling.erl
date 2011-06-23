@@ -2,6 +2,7 @@
 
 -export([substitute_chars/3, gsubstitute_chars/3]).
 
+% One time replacement
 substitute_chars(InStr, TargetSeq, ReplaceSeq) ->
 	TPos = string:str(InStr, TargetSeq),
 	if
@@ -12,6 +13,7 @@ substitute_chars(InStr, TargetSeq, ReplaceSeq) ->
 			string:concat(string:concat(string:substr(InStr, 1, TPos -1), ReplaceSeq),string:substr(InStr,TPos + SeqLen))
 	end.
 
+% Global replacement - replaces all occurrences
 gsubstitute_chars(InStr, TargetSeq, ReplaceSeq) ->
 	NewStr = substitute_chars(InStr, TargetSeq, ReplaceSeq),
 	substitute_chars(NewStr, TargetSeq, ReplaceSeq),
