@@ -1,6 +1,6 @@
 -module(sterling).
 
--export([substitute_chars/3, gsubstitute_chars/3]).
+-export([substitute_chars/3, gsubstitute_chars/3, find_all_positions/2]).
 
 % One time replacement
 substitute_chars(InStr, TargetSeq, ReplaceSeq) ->
@@ -24,3 +24,21 @@ gsubstitute_chars(InStr, _, _, InStr) ->
 gsubstitute_chars(InStr, TargetSeq, ReplaceSeq, _) ->
 	NewStr = substitute_chars(InStr, TargetSeq, ReplaceSeq),
 	gsubstitute_chars(NewStr, TargetSeq, ReplaceSeq, InStr).
+
+% This can technically be done using Regex - but here's a string alternative
+% In case Regex proves to be less performant
+find_all_positions(InStr, TargetSeq) ->
+    find_all_positions(InStr, TargetSeq, [], 0).
+
+find_all_positions(InStr, TargetSeq, Accum, PriorLen)->
+    TPos = string:str(InStr, TargetSeq),
+    if
+        TPos =:= 0 ->
+            lists:reverse(Accum);
+        true ->
+            NewAccum = [ TPos + PriorLen | Accum ],
+            NewOffset = TPos + string:len(TargetSeq),
+            NewStr = string:substr(InStr,NewOffset),
+            NewPriorLen = string:len(InStr) - string:len(NewStr) + PriorLen,
+            find_all_positions(NewStr, TargetSeq, NewAccum, NewPriorLen)
+    end.
